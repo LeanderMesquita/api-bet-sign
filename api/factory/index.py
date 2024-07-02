@@ -1,5 +1,5 @@
 from api.src.tasks.multiple_inject import MultipleInjection
-from api.src.tasks.multiple_inject import SingleInjection
+from api.src.tasks.single_injection import SingleInjection
 
 class TaskFactory:
     @staticmethod
