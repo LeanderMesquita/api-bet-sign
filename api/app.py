@@ -3,13 +3,16 @@ from werkzeug.utils import secure_filename
 from api.index import start_injection
 from api.src.utils.functions.read_dataframe import read_dataframe
 from api.src.utils.logger.index import log
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/unique-register', methods=['POST'])
 def unique_registering():
-    return None
+    data = request.get_json()
+    print(data)  # Print the incoming request data
+    return jsonify({"message": "Dados recebidos com sucesso!"}), 200
 
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
