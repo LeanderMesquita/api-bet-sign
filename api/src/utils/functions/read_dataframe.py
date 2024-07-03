@@ -4,9 +4,9 @@ import os
 def read_dataframe(path: str):
     try:
         if not path:
-            raise FileNotFoundError(f'Arquivo não encontrado')
+            raise FileNotFoundError(f'File not found')
 
-        file_extension = os.path.splitext(path)[1].lower()
+        file_extension = os.path.splitext(path.filename)[1].lower()
 
         if file_extension == '.csv':
             df = pd.read_csv(path, dtype=str)    
@@ -16,5 +16,5 @@ def read_dataframe(path: str):
         return df
     
     except Exception as e:
-        print(f"Ocorreu um erro: {e}")
+        print(f"An error has ocurred while reading path: {e}")
         return None
