@@ -1,6 +1,6 @@
 from flask import Flask, request,jsonify
 from werkzeug.utils import secure_filename
-from api.index import start_injection
+from api.index import Starter
 from api.src.utils.functions.read_dataframe import read_dataframe
 from api.src.utils.logger.index import log
 from flask_cors import CORS
@@ -12,7 +12,14 @@ CORS(app)
 def unique_registering():
     data = request.get_json()
     print(data)  # Print the incoming request data
-    return jsonify({"message": "Dados recebidos com sucesso!"}), 200
+    if data:
+        log.info('Starting single injection via JSON.')
+        starter = Starter()
+        starter.start_injection(data, 'json_injection')
+        return jsonify({'message': 'JSON successfully loaded and processed'}), 200
+    return jsonify({'message': 'ERROR: JSON not loaded'}), 400
+    
+
 
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
@@ -27,8 +34,8 @@ def upload_file():
         filename = secure_filename(file.filename)
         log.info(f'Recieved file: {filename}')
         df = read_dataframe(file)
-
-        start_injection(df, 'multiple_injection')
+        starter = Starter()
+        starter.start_injection(df, 'dataframe_injection')
         return jsonify({'message': 'File successfully uploaded and processed'}), 200
 
 
