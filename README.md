@@ -52,14 +52,20 @@ pip install -r requirements.txt
 
 ### 4. Executar o Projeto
 
+Entre em /api
+
+```sh
+cd /api
+```
+
 Para executar o projeto, use o comando:
 
 ```sh
 flask run
 ```
 
-Isso iniciará o servidor Flask e você poderá acessar a aplicação no seu navegador.
+Isso iniciará o servidor Flask e você poderá testar a aplicação.
 
 ---
 
-Siga estas instruções para configurar e executar corretamente o projeto de automação. Se houver alguma dúvida ou problema, consulte a documentação ou entre em contato com o desenvolvedor responsável.
+Siga estas instruções para configurar e executar corretamente o projeto de automação. Se houver alguma dúvida ou problema, consulte a documentação ou entre em contato.
