@@ -52,7 +52,7 @@ pip install -r requirements.txt
 
 ### 4. Executar o Projeto
 
-Entre em /api
+Certifique-se que está dentro de /api, caso não:
 
 ```sh
 cd /api
