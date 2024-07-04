@@ -25,7 +25,7 @@ class Configure:
             load_dotenv()
             base_url = os.getenv('BASE_URL')
             log.debug(f"Filling URL: {base_url}")
-            page.goto(base_url, timeout=60000)
+            page.goto(base_url, timeout=9000000)
 
             return page, p
         
