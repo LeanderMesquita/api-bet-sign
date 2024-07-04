@@ -3,8 +3,8 @@ from api.src.tasks.single_injection import SingleInjection
 
 class TaskFactory:
     @staticmethod
-    def create_task(task_type, row):
+    def create_task(task_type, row, page):
         if task_type == 'multiple_injection':
-            return MultipleInjection(row)
+            return MultipleInjection(row, page)
         elif task_type == 'single_injection':
-            return SingleInjection(row)
+            return SingleInjection(row, page)
