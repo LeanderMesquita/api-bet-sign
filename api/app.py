@@ -15,7 +15,7 @@ def unique_registering():
     if data:
         log.info('Starting single injection via JSON.')
         starter = Starter()
-        starter.start_injection(data, 'json_injection')
+        starter.start_JSON_injection(data, 'json_injection')
         return jsonify({'message': 'JSON successfully loaded and processed'}), 200
     return jsonify({'message': 'ERROR: JSON not loaded'}), 400
     
@@ -35,7 +35,7 @@ def upload_file():
         log.info(f'Recieved file: {filename}')
         df = read_dataframe(file)
         starter = Starter()
-        starter.start_injection(df, 'dataframe_injection')
+        starter.start_dataframe_injection(df)
         return jsonify({'message': 'File successfully uploaded and processed'}), 200
 
 
