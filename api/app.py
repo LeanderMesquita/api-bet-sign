@@ -11,7 +11,6 @@ CORS(app)
 @app.route('/unique-register', methods=['POST'])
 def unique_registering():
     data = request.get_json()
-    print(data)  # Print the incoming request data
     if data:
         log.info('Starting single injection via JSON.')
         starter = Starter()
