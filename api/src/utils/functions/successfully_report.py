@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 import pandas as pd
 from datetime import datetime
 
-def successfully_report(cpf, account_name):
+def successfully_report(cpf, account_name, account_email, account_password):
 
     directory_name = 'relatorio_cadastrados'
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -16,10 +16,10 @@ def successfully_report(cpf, account_name):
     
     if os.path.exists(filename):
         existing_df = pd.read_excel(filename)
-        new_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name]})
+        new_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password]})
         updated_df = pd.concat([existing_df, new_df], ignore_index=True)
     else:
-        updated_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name]})
+        updated_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password]})
     
     updated_df.to_excel(filename, index=False)
 
