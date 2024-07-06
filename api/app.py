@@ -12,9 +12,23 @@ CORS(app)
 def process_in_chunks(df):
     starter = Starter()
     chunk_size = 5
+    threads = []
     for i in range(0, len(df), chunk_size):
-        chunk = df.iloc[i:i + chunk_size]
-        threading.Thread(target=starter.start_injection, args=(chunk, 'dataframe_injection')).start()
+        chunk = df.iloc[i:i + chunk_size].copy()  # Garantir que estamos passando uma cópia do dataframe
+        print(f'Processing chunk:\n{chunk}\nTipo: {type(chunk)}')  # Log para verificar o chunk
+        thread = threading.Thread(target=starter.start_injection, args=(chunk, 'dataframe_injection'))
+        threads.append(thread)
+        thread.start()
+
+        # Join threads to limit simultaneous browser instances to 5
+        if len(threads) >= chunk_size:
+            for t in threads:
+                t.join()
+            threads = []
+
+    # Join remaining threads
+    for t in threads:
+        t.join()
 
 @app.route('/unique-register', methods=['POST'])
 def unique_registering():

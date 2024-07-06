@@ -17,7 +17,7 @@ class Configure:
 
             p = sync_playwright().start()
 
-            log.debug('Launching browser with proxy settings')
+            log.debug(f'Launching browser with proxy settings - {proxy_options["server"]}')
             browser = p.chromium.launch(headless=is_headless, proxy={"server": "per-context"})
             context = browser.new_context(proxy=proxy_options)
             page = context.new_page()
