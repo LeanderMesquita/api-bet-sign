@@ -21,36 +21,36 @@ class JSONInjection(BaseTask):
 
             ## first step
             log.debug(f'Trimming birthdate {self.obj['Nascimento']}')
-            day, month, year = split_date(self.obj['Nascimento'])#self.obj['Nascimento']
+            day, month, year = split_date(self.obj['Nascimento'])
             self.page.get_by_placeholder("dd").click()
             sleep(1)
             log.debug(f'Filling selector: "dd" with value: {day}')
-            self.page.get_by_placeholder("dd").fill("28")#day
+            self.page.get_by_placeholder("dd").fill(day)
             sleep(1)
             log.debug(f'Filling selector: "mm" with value: {month}')
-            self.page.get_by_placeholder("mm").fill("09")#month
+            self.page.get_by_placeholder("mm").fill(month)
             sleep(1)
             log.debug(f'Filling selector: "yyyy" with value: {year}')
-            self.page.get_by_placeholder("yyyy").fill("1963")#year
+            self.page.get_by_placeholder("yyyy").fill(year)
 
-            click_and_fill(self.page, selector="CPF", value="229.126.063-49", press="Enter")#self.obj['CPF']
+            click_and_fill(self.page, selector="CPF", value=self.obj['CPF'], press="Enter")
             
             #second step
-            click_and_fill(self.page, selector="endereço", value="Rua teste")#self.obj['Endereço']
+            click_and_fill(self.page, selector="endereço", value=self.obj['Endereço'])
         
             
             self.page.get_by_label("cidade", exact=True).click()
             sleep(1)
-            log.debug(f'Filling selector: "cidade" with value: {"?CIDADE"}')
-            self.page.get_by_label("cidade", exact=True).fill("fortaleza")#self.obj['Cidade']
+            log.debug(f'Filling selector: "cidade" with value: {self.obj['Cidade']}')
+            self.page.get_by_label("cidade", exact=True).fill(self.obj['Cidade'])
 
-            click_and_fill(self.page, selector="cep", value="60000-600")#self.obj['CEP']
-            click_and_fill(self.page, selector="Número de telefone", value="940028922", press="Enter")#self.obj['Telefone']
+            click_and_fill(self.page, selector="cep", value=self.obj['CEP'])
+            click_and_fill(self.page, selector="Número de telefone", value=self.obj['Telefone'], press="Enter")
 
             #third step
-            click_and_fill(self.page, selector="E-mail", value="emailteste@gmail.com")#self.obj['Email']
-            click_and_fill(self.page, selector="nome de usuário", value="testebet2")#self.obj['Nome Usuario]
-            click_and_fill(self.page, selector="senha", value="Edra36Edra")#self.obj['Senha']
+            click_and_fill(self.page, selector="E-mail", value=self.obj['Email'])
+            click_and_fill(self.page, selector="nome de usuário", value=self.obj['Nome Usuario'])
+            click_and_fill(self.page, selector="senha", value=self.obj['Senha'])
 
             self.page.locator("label").filter(has_text="Tenho 18 anos ou mais de").click()
             sleep(1)
