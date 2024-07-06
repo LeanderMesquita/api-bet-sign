@@ -23,6 +23,7 @@ def unique_registering():
 
 @app.route('/upload-file', methods=['POST'])
 def upload_file():
+    headless_option = request.form['headless']
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
     
@@ -34,17 +35,17 @@ def upload_file():
         filename = secure_filename(file.filename)
         log.info(f'Recieved file: {filename}')
         df = read_dataframe(file)
-        process_in_chunks(df)
+        process_in_chunks(df, headless_option)
         return jsonify({'message': 'File successfully uploaded and processed'}), 200
 
 
-def process_in_chunks(df):
+def process_in_chunks(df, headless):
     starter = Starter()
     chunk_size = 5
     threads = []
     for i in range(0, len(df), chunk_size):
         chunk = df.iloc[i:i + chunk_size].copy()  
-        thread = threading.Thread(target=starter.start_dataframe_injection, args=(chunk, 'dataframe_injection'))
+        thread = threading.Thread(target=starter.start_dataframe_injection, args=(chunk, headless, 'dataframe_injection'))
         threads.append(thread)
         thread.start()
 
