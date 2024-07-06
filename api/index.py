@@ -28,7 +28,11 @@ class Starter:
             row_df = row.to_frame().T
             log.debug(f'Converted row to DataFrame: {type(row_df)}\n{row_df}')
 
-            proxy = {'server': 'http://43.159.29.83:21836/', "username": 'odFzSl36zp', "password": '87478941'}
+            # Dynamic proxy construction
+            proxy_ip = row['Proxy']  
+            proxy_url = f'http://{proxy_ip}'
+            proxy = {'server': proxy_url, 'username': 'odFzSl36zp', 'password': '87478941'}
+            
             page, p = self.configure.construct_browser(self, server=proxy['server'], username=proxy['username'], password=proxy['password'])
             task = TaskFactory.create_task(selected_task, row_df, page)
             task.execute()
