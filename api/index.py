@@ -15,14 +15,18 @@ class Starter:
         try:
             log.info('Starting JSON injection')
             username, password = self.configure.get_credentials()
-            page, p = self.configure.construct_browser(self, server=data['Proxy'], username=username, password=password)
+            proxy_ip = data['ipProxy']  
+            proxy_url = f'http://{proxy_ip}'
+            page, p = self.configure.construct_browser(self, server=proxy_url, username=username, password=password)
             task = TaskFactory.create_task(selected_task, data, page)
             task.execute()
-            sleep(5)
-            p.stop()
-
+            sleep(3)
         except Exception as e:
             log.critical(f'An critical error ocurred!: {e}') 
+        finally:
+            p.stop()
+            log.info(f'Browser closed for {data["name"]}')
+        
     
     def start_dataframe_injection(self, data, selected_task:str = 'dataframe_injection'):
         try:
@@ -43,7 +47,8 @@ class Starter:
             # Dynamic proxy construction
             proxy_ip = row['Proxy']  
             proxy_url = f'http://{proxy_ip}'
-            proxy = {'server': proxy_url, 'username': 'odFzSl36zp', 'password': '87478941'}
+            username, password = self.configure.get_credentials()
+            proxy = {'server': proxy_url, 'username': username, 'password': password}
             
             try:
                 page, p = self.configure.construct_browser(self, server=proxy['server'], username=proxy['username'], password=proxy['password'])
