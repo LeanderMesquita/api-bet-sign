@@ -29,8 +29,8 @@ class Starter:
         except Exception as e:
             log.critical(f'An critical error ocurred!: {e}') 
 
-    def injection(self, data, selected_task):
-        page, p = self.configure.construct_browser(self, server='http://43.159.29.83:21836', username='odFzSl36zp', password='87478941')#server = row['Proxy']
+    def injection(self, data, selected_task): 
+        page, p = self.configure.construct_browser(self, server=data['Proxy'], username='odFzSl36zp', password='87478941')#server = row['Proxy']
         task = TaskFactory.create_task(selected_task, data, page)
         task.execute()
         sleep(5)
