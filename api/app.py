@@ -1,3 +1,4 @@
+from time import sleep
 from flask import Flask, request,jsonify
 from werkzeug.utils import secure_filename
 from api.index import Starter
@@ -34,28 +35,32 @@ def upload_file():
     if file:
         filename = secure_filename(file.filename)
         log.info(f'Recieved file: {filename}')
+        log.debug(f'Headless option == {headless_option}')
         df = read_dataframe(file)
         process_in_chunks(df, headless_option)
         return jsonify({'message': 'File successfully uploaded and processed'}), 200
 
 
-def process_in_chunks(df, headless):
+def process_in_chunks(df, headless, num_workers:int = 3):
     starter = Starter()
-    chunk_size = 5
+    chunk_size = int(len(df) / num_workers)
     threads = []
+    thread_id = 1
+
     for i in range(0, len(df), chunk_size):
         chunk = df.iloc[i:i + chunk_size].copy()  
-        thread = threading.Thread(target=starter.start_dataframe_injection, args=(chunk, headless, 'dataframe_injection'))
+        log.warning(f'initiating thread n-{thread_id}')
+        log.info(f'chunk has {len(chunk)} rows.')
+        thread = threading.Thread(target=starter.start_dataframe_injection, args=(chunk, headless))
         threads.append(thread)
         thread.start()
+        thread_id += 1
 
-        # Join threads to limit simultaneous browser instances to 5
         if len(threads) >= chunk_size:
             for t in threads:
                 t.join()
             threads = []
 
-    # Join remaining threads
     for t in threads:
         t.join()
 
