@@ -18,16 +18,16 @@ class DataframeInjection(BaseTask):
     def execute(self) -> None:
         
         try:
-            nome = self.row['Nome'].iloc[0]
-            cpf = self.row['CPF'].iloc[0]
-            nascimento = self.row['Nascimento'].iloc[0]
-            endereco = self.row['Endereço'].iloc[0]
-            cidade = self.row['Cidade'].iloc[0]
-            cep = self.row['CEP'].iloc[0]
-            telefone = self.row['Telefone'].iloc[0]
-            email = self.row['E-mail'].iloc[0]
-            nome_usuario = self.row['Nome Usuario'].iloc[0]
-            senha = self.row['Senha'].iloc[0]
+            nome = self.row['Nome']
+            cpf = self.row['CPF']
+            nascimento = self.row['Nascimento']
+            endereco = self.row['Endereço']
+            cidade = self.row['Cidade']
+            cep = self.row['CEP']
+            telefone = self.row['Telefone']
+            email = self.row['E-mail']
+            nome_usuario = self.row['Nome Usuario']
+            senha = self.row['Senha']
 
             log.info(f'Registering account ({nome}).')
 
