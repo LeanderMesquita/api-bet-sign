@@ -11,6 +11,15 @@ class DataframeInjection(BaseTask):
         self.dataframe = dataframe
         self.page = page
 
+    def verify_email(self, page, email:str, password:str ):
+        page.goto("https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=155&ct=1720985053&rver=7.0.6738.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26cobrandid%3dab0455a0-8d03-46b9-b18b-df2f57b9e44c%26deeplink%3dowa%252f%253frealm%253dhotmail.com%26RpsCsrfState%3dd3468517-3c62-bddc-eb4c-dcaefce5542b&id=292841&aadredir=1&whr=hotmail.com&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=ab0455a0-8d03-46b9-b18b-df2f57b9e44c")
+        page.get_by_test_id("i0116").fill(email)
+        page.get_by_role("button", name="Avançar").click()
+        page.get_by_test_id("i0118").fill(password)
+        page.get_by_test_id("i0118").press("Enter")
+        page.get_by_test_id("checkboxField").check()
+        page.get_by_label("Continuar conectado?").click()
+
     def execute(self) -> None:
         print(f'Tipo de self.dataframe: {type(self.dataframe)}')
         print(f'Dados do meu dataframe passado pelo chunk:\n{self.dataframe}')
