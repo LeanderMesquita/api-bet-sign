@@ -14,10 +14,10 @@ class VerifyAccount(BaseTask):
       
       url_email = os.getenv('URL_EMAIL')
       page.goto(url_email)
-      
-      page.get_by_test_id("i0116").fill('davi_o.r@hotmail.com')
+
+      page.get_by_test_id("i0116").fill('')
       page.get_by_role("button", name="Avançar").click()
-      page.get_by_test_id("i0118").fill('davioliveira123')
+      page.get_by_test_id("i0118").fill('')
       page.get_by_test_id("i0118").press("Enter")
       page.get_by_test_id("checkboxField").check()
       page.get_by_label("Continuar conectado?").click()
