@@ -1,11 +1,19 @@
 from api.src.utils.functions.format_date import format_date
+import pandas as pd
+def split_date(date_str: str):
+    """
+    Divide uma data no formato 'YYYY-MM-DD HH:MM:SS' em dia, mês e ano.
+    
+    Args:
+    date_str (str): A data a ser dividida.
+    
+    Returns:
+    tuple: Contendo dia, mês e ano.
+    """
+    try:
+        date = pd.to_datetime(date_str, format='%Y-%m-%d %H:%M:%S', errors='raise')
+        return date.day, date.month, date.year
+    except ValueError:
+        raise ValueError(f"Data inválida: {date_str}")
 
-def split_date(raw_date: str):
-    formatted_date = format_date(raw_date)
-
-    if '/' not in formatted_date:
-        raise ValueError('Invalid format. Date must be: "DD/MM/YYYY"') 
-        
-    day, month, year = formatted_date.split('/')
-    return day, month, year
 

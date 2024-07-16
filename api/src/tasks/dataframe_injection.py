@@ -1,84 +1,79 @@
 from time import sleep
 from api.src.utils.functions.error_report import error_report
+from api.src.utils.functions.split_date import split_date
 from api.src.utils.functions.successfully_report import successfully_report
+from api.src.utils.functions.validate_and_format_cpf import validate_and_format_cpf
 from api.src.utils.logger.index import log
 from api.src.tasks.base_task import BaseTask
 from api.src.utils.functions.click_and_fill import click_and_fill
-from api.src.utils.functions.split_date import split_date
+import re
+import pandas as pd
+
 
 class DataframeInjection(BaseTask):
-    def __init__(self, dataframe, page):
-        self.dataframe = dataframe
+    def __init__(self, row, page):
+        self.row = row
         self.page = page
 
-    def verify_email(self, page, email:str, password:str ):
-        page.goto("https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=155&ct=1720985053&rver=7.0.6738.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26cobrandid%3dab0455a0-8d03-46b9-b18b-df2f57b9e44c%26deeplink%3dowa%252f%253frealm%253dhotmail.com%26RpsCsrfState%3dd3468517-3c62-bddc-eb4c-dcaefce5542b&id=292841&aadredir=1&whr=hotmail.com&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=ab0455a0-8d03-46b9-b18b-df2f57b9e44c")
-        page.get_by_test_id("i0116").fill(email)
-        page.get_by_role("button", name="Avançar").click()
-        page.get_by_test_id("i0118").fill(password)
-        page.get_by_test_id("i0118").press("Enter")
-        page.get_by_test_id("checkboxField").check()
-        page.get_by_label("Continuar conectado?").click()
-
     def execute(self) -> None:
-        print(f'Tipo de self.dataframe: {type(self.dataframe)}')
-        print(f'Dados do meu dataframe passado pelo chunk:\n{self.dataframe}')
-        if self.dataframe is None or self.dataframe.empty: 
-            log.error('Dataframe is None or empty!')
-            return
-        else:
-            log.success('Dataframe created successfully!')
+        
+        try:
+            nome = self.row['Nome']
+            cpf = self.row['CPF']
+            nascimento = self.row['Nascimento']
+            endereco = self.row['Endereço']
+            cidade = self.row['Cidade']
+            cep = self.row['CEP']
+            telefone = self.row['Telefone']
+            email = self.row['E-mail']
+            nome_usuario = self.row['Nome Usuario']
+            senha = self.row['Senha']
 
-        log.debug(f'Dataframe length: {len(self.dataframe)}')
+            log.info(f'Registering account ({nome}).')
 
-        for index, row in self.dataframe.iterrows():
-            log.debug(f'Processing row {index}: {row.to_dict()}')
-            try:
-                log.info(f'Registering account ({row["Nome"]}).')
-                
-                log.debug('Accepting cookies')
-                self.page.get_by_role("button", name="Aceitar todos os cookies").click()
+            log.debug('Accepting cookies')
+            self.page.get_by_role("button", name="Aceitar todos os cookies").click()
 
-                ## first step
-                
-                day, month, year = split_date(row['Nascimento'])
-                self.page.get_by_placeholder("dd").click()
-                sleep(1)
-                log.debug(f'Filling selector: "dd" with value: {day}')
-                self.page.get_by_placeholder("dd").fill(day)
-                sleep(1)
-                log.debug(f'Filling selector: "mm" with value: {month}')
-                self.page.get_by_placeholder("mm").fill(month)
-                sleep(1)
-                log.debug(f'Filling selector: "yyyy" with value: {year}')
-                self.page.get_by_placeholder("yyyy").fill(year)
+            ## first step
+            day, month, year = split_date(nascimento)
+            self.page.get_by_placeholder("dd").click()
+            sleep(1)
+            log.debug(f'Filling selector: "dd" with value: {day}')
+            self.page.get_by_placeholder("dd").fill(str(day))
+            sleep(1)
+            log.debug(f'Filling selector: "mm" with value: {month}')
+            self.page.get_by_placeholder("mm").fill(str(month))
+            sleep(1)
+            log.debug(f'Filling selector: "yyyy" with value: {year}')
+            self.page.get_by_placeholder("yyyy").fill(str(year))
 
-                click_and_fill(self.page, selector="CPF", value=row['CPF'], press="Enter")
-                
-                #second step
-                click_and_fill(self.page, selector="endereço", value=row['Endereço'])
+            # Validate and format CPF
+            cpf = validate_and_format_cpf(cpf)
             
-                self.page.get_by_label("cidade", exact=True).click()
-                sleep(1)
-                log.debug(f'Filling selector: "cidade" with value: {row["Cidade"]}')
-                self.page.get_by_label("cidade", exact=True).fill(row['Cidade'])
+            click_and_fill(self.page, selector="CPF", value=cpf, press="Enter", after_delay=1.5)
+            
+            # Second step
+            click_and_fill(self.page, selector="endereço", value=endereco)
 
-                click_and_fill(self.page, selector="cep", value=row['CEP'])
-                click_and_fill(self.page, selector="Número de telefone", value=row['Telefone'], press="Enter")
+            self.page.get_by_label("cidade", exact=True).click()
+            sleep(1)
+            log.debug(f'Filling selector: "cidade" with value: {cidade}')
+            self.page.get_by_label("cidade", exact=True).fill(cidade)
 
-                #third step
-                click_and_fill(self.page, selector="E-mail", value=row['E-mail'])
-                click_and_fill(self.page, selector="nome de usuário", value=row['Nome'])
-                click_and_fill(self.page, selector="senha", value=row['Senha'])
+            click_and_fill(self.page, selector="cep", value=cep)
+            click_and_fill(self.page, selector="Número de telefone", value=telefone, press="Enter")
 
-                self.page.locator("label").filter(has_text="Tenho 18 anos ou mais de").click()
-                sleep(1)
-                self.page.get_by_label("Tenho 18 anos ou mais de").press("Enter")
+            # Third step
+            click_and_fill(self.page, selector="E-mail", value=email)
+            click_and_fill(self.page, selector="nome de usuário", value=nome_usuario)
+            click_and_fill(self.page, selector="senha", value=senha)
 
-                log.success(f'Account ({row["Nome"]}) was registered successfully!')
-                successfully_report(row['CPF'], row['Nome'])
-                if index >= len(self.dataframe) - 1: 
-                    log.warning(f'All accounts processed. Total: {len(self.dataframe)}')
-            except Exception as e:
-                log.error(f'The current account {row["Nome"]} was not registered. {e}')
-                error_report(row['CPF'], row['Nome'], error=e)
+            self.page.locator("label").filter(has_text="Tenho 18 anos ou mais de").click()
+            sleep(1)
+            self.page.get_by_label("Tenho 18 anos ou mais de").press("Enter")
+
+            log.success(f'Account ({nome}) was registered successfully!')
+            successfully_report(cpf, nome, email, senha)
+        except Exception as e:
+            log.error(f'The current account {nome} was not registered. {e}')
+            error_report(cpf, nome, error=e)

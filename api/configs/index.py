@@ -17,7 +17,9 @@ class Configure:
 
             p = sync_playwright().start()
 
-            log.debug(f'Launching browser with proxy settings - {proxy_options["server"]}')
+            log.debug(f'Launching browser with proxy settings')
+            log.debug(f'Server: {proxy_options["server"]} - Username: {proxy_options["username"]} - Password: {proxy_options["password"]}')
+
             browser = p.chromium.launch(headless=is_headless, proxy={"server": "per-context"})
             context = browser.new_context(proxy=proxy_options)
             page = context.new_page()
@@ -31,3 +33,9 @@ class Configure:
         
         except Exception as e:
             log.error(f'Error in browser construction: {e}')
+
+    def get_credentials(self):
+        load_dotenv()
+        username = os.getenv('BASE_USERNAME')
+        password = os.getenv('BASE_PASSWORD')
+        return username, password
