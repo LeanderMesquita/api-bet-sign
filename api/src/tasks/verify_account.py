@@ -14,16 +14,20 @@ class VerifyAccount(BaseTask):
     def execute(self) -> None:
         try:
             page = self.page
-            
+            email = self.row['E-mail']
+            password = self.row['Senha']
+
+
+
             if not page.locator('Complete a sua conta').is_visible():
                 raise ValueError(f'Error - Non created account cannot verify email')
             
             url_email = os.getenv('URL_EMAIL')
             page.goto(url_email)
 
-            page.get_by_test_id("i0116").fill('')
+            page.get_by_test_id("i0116").fill(email)
             page.get_by_role("button", name="Avançar").click()
-            page.get_by_test_id("i0118").fill('')
+            page.get_by_test_id("i0118").fill(password)
             page.get_by_test_id("i0118").press("Enter")
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()

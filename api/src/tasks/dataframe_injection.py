@@ -26,7 +26,7 @@ class DataframeInjection(BaseTask):
             cep = self.row['CEP']
             telefone = self.row['Telefone']
             email = self.row['E-mail']
-            nome_usuario = self.row['Nome Usuario']
+            nome_usuario = self.row['E-mail'].split('@')[0]
             senha = self.row['Senha']
 
             log.info(f'Registering account ({nome}).')
