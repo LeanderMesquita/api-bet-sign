@@ -57,6 +57,7 @@ def upload_file():
         log.info(f'Recieved file: {filename}')
         log.debug(f'Headless option == {headless_option}')
         df = read_dataframe(file)
+        log.debug(f'The current dataframe has {len(df)} rows')
         process_in_chunks(df, headless_option)
         return jsonify({'message': 'File successfully uploaded and processed'}), 200
 
