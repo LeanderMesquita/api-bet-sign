@@ -63,6 +63,8 @@ def upload_file():
 
 
 def process_in_chunks(df, headless, num_workers:int = 3):
+    if len(df) < num_workers:
+        num_workers = len(df)
     starter = Starter()
     chunk_size = int(len(df) / num_workers)
     threads = []
