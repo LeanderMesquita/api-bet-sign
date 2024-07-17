@@ -72,8 +72,8 @@ class DataframeInjection(BaseTask):
             sleep(1)
             self.page.get_by_label("Tenho 18 anos ou mais de").press("Enter")
 
-            log.success(f'Account ({nome}) was registered successfully!')
-            successfully_report(cpf, nome, email, senha)
+            #log.success(f'Account ({nome}) was registered successfully!')
+            #successfully_report(cpf, nome, email, senha)
         except Exception as e:
             log.error(f'The current account {nome} was not registered. {e}')
             error_report(cpf, nome, error=e)
