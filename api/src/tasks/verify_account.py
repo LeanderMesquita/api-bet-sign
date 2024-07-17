@@ -17,10 +17,11 @@ class VerifyAccount(BaseTask):
             email = self.row['E-mail']
             password = self.row['Senha']
 
+            log.info("Starting account validation")
+            # page.get_by_role("button", name="Confira o seu inbox").click()
 
-
-            if not page.locator('Complete a sua conta').is_visible():
-                raise ValueError(f'Error - Non created account cannot verify email')
+            # if not page.locator('Complete a sua conta').is_visible():
+            #     raise ValueError(f'Error - Non created account cannot verify email')
             
             url_email = os.getenv('URL_EMAIL')
             page.goto(url_email)
@@ -32,7 +33,7 @@ class VerifyAccount(BaseTask):
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
             page.wait_for_timeout(3000)
-            page.get_by_text("Caixa de Entrada").click()
+            page.get_by_label("Lista de mensagens", exact=True).click()
             page.wait_for_timeout(3000)
             page.locator("div").filter(has_text=re.compile(r"^SUPERBET - Ative sua conta$")).click()
             page.wait_for_timeout(10000)
