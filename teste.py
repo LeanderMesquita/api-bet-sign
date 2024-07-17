@@ -15,6 +15,7 @@ def run(playwright: Playwright):
     url_email = os.getenv('URL_EMAIL')
     page.goto(url_email)
 
+    page.query_selector_all
     # Realizar login
     page.get_by_test_id("i0116").fill('davi_o.r@hotmail.com')
     page.get_by_role("button", name="Avançar").click()
@@ -27,7 +28,7 @@ def run(playwright: Playwright):
     page.wait_for_timeout(3000)
     page.locator("div").filter(has_text=re.compile(r"^SUPERBET - Ative sua conta$")).click()
     page.wait_for_timeout(10000)
-    with page.expect_popup() as page2_info:
+    with page.expect_popup(timeout=50000) as page2_info:
         page.get_by_role("link", name="Ative sua conta").click()
     page3 = page2_info.value
     print('Info page2', page2_info)
