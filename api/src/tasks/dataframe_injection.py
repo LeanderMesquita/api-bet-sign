@@ -77,3 +77,4 @@ class DataframeInjection(BaseTask):
         except Exception as e:
             log.error(f'The current account {nome} was not registered. {e}')
             error_report(cpf, nome, error=e)
+            # melhoria fazer com que estoure o erro e nao saia do loop raise e

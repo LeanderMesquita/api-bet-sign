@@ -38,39 +38,32 @@ class VerifyAccount(BaseTask):
             
             url_email = os.getenv('URL_EMAIL')
             page.goto(url_email)
-
+            
+            log.debug("Logging in")
             page.get_by_test_id("i0116").fill(email)
             page.get_by_role("button", name="Avançar").click()
             page.get_by_test_id("i0118").fill(password)
             page.get_by_test_id("i0118").press("Enter")
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
-            # Entrar na caixa de entrada
-            # page.get_by_label("Lista de mensagens").click()
+            log.debug("Wait for dom content load...")
             page.wait_for_timeout(20000)
-
             log.debug("Find activation email in Inbox")
             if not self.find_and_click_email():
-                # Se não encontrar, verificar no lixo eletrônico
                 log.debug("Find activation email in Junk")
                 page.get_by_text("Lixo Eletrônico").click()
                 page.wait_for_timeout(20000)
                 if not self.find_and_click_email():
-                    print("Email não encontrado.") # Trocar por error...
-                    return
+                    raise ValueError("Email não encontrado.")
                 else:
                     page.get_by_role("button", name="Mostrar conteúdo bloqueado e").click()
                 
             page.wait_for_timeout(50000)
 
             log.debug('Clicking the link activation to account')
-            # with page.expect_popup(timeout=50000) as page2_info:
-            #     page.wait_for_timeout(10000)
-            #     page.get_by_role("link", name="Ative sua conta").click()
-            # page = page2_info.value
-            # page.goto("https://superbet.com/pt-br/")
             activation_link = page.locator("a:has-text('Ative sua conta')").get_attribute('href')
-            page.goto(activation_link, timeout=50000)
+            page.goto(activation_link, timeout=1000000)
+            page.wait_for_timeout(50000)
             log.debug('Accepting Cookies')
             page.get_by_role("button", name="Aceitar todos os cookies").click()
             expect(page.locator("body")).to_contain_text("Parabéns!")
@@ -87,12 +80,8 @@ class VerifyAccount(BaseTask):
                 page.get_by_role("button", name="selecione o bônus de esporte").click()
                 log.debug('Making a deposit')
                 page.get_by_role("button", name="depositar", exact=True).click()
-                # Seguir fluxo normal
-                # falta pegar uma conta que o bonus tenha ficado ativo, escolher o esporte e depois ve no 
-                # link do pix se tem as seguintes pagadoras Okto ou Global... Exemplo de link:
-                # https://00020101021226790014br.gov.bcb.pix2557brcode.starkinfra.com/v2/d9051056188541ff907b78c95fbcbd075204000053039865802BR5920Okto%20Pagamentos%20S.A.6009Sao%20Paulo62070503***6304AD5B
+                
                 page.get_by_role("button", name=" COPIAR CÓDIGO").click()  # Copia o código PIX
-                # Obter o código PIX copiado e imprimir no console
                 codigo_pix = page.evaluate('navigator.clipboard.readText()')
                 provider = self.get_payment_provider(codigo_pix)
                 if provider:
