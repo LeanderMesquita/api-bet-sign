@@ -15,7 +15,7 @@ class DataframeInjection(BaseTask):
         self.row = row
         self.page = page
 
-    def execute(self) -> None:
+    def execute(self) -> bool:
         
         try:
             nome = self.row['Nome']
@@ -73,9 +73,11 @@ class DataframeInjection(BaseTask):
             self.page.get_by_label("Tenho 18 anos ou mais de").press("Enter")
             sleep(5)
 
-            #log.success(f'Account ({nome}) was registered successfully!')
+            log.success(f'Account ({nome}) was registered successfully!')
             #successfully_report(cpf, nome, email, senha)
+            return True
         except Exception as e:
             log.error(f'The current account {nome} was not registered. {e}')
             error_report(cpf, nome, error=e)
-            # melhoria fazer com que estoure o erro e nao saia do loop raise e
+            return False
+            
