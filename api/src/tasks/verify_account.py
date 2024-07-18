@@ -22,7 +22,7 @@ class VerifyAccount(BaseTask):
             return False
         
     def get_payment_provider(link: str) -> str:
-        payment_providers = ["Okto", "Global"]
+        payment_providers = ["Okto", "Global", "Pay By SB GLOBAL", "Pay Brokers Cobranca E Se"]
         for provider in payment_providers:
             if re.search(provider, link, re.IGNORECASE):
                 return provider
@@ -83,15 +83,16 @@ class VerifyAccount(BaseTask):
                 
                 page.get_by_role("button", name=" COPIAR CÓDIGO").click()  # Copia o código PIX
                 codigo_pix = page.evaluate('navigator.clipboard.readText()')
+                log.debug(f'Value pix code: {codigo_pix}') 
                 provider = self.get_payment_provider(codigo_pix)
                 if provider:
                     log.info(f'Account Verified Successfully with payment provider: {provider}')
-                    print(f"Código PIX copiado: {codigo_pix}")
-                    print(f"Pagadora encontrada: {provider}")
+                    log.debug(f"Código PIX copiado: {codigo_pix}")
+                    log.debug(f"Pagadora encontrada: {provider}")
                 else:
                     log.info("Account Verified Successfully, but the payment provider is not Okto or Global.")
-                    print(f"Código PIX copiado: {codigo_pix}")
-                    print("Código PIX não contém as pagadoras Okto ou Global.")
+                    log.debug(f"Código PIX copiado: {codigo_pix}")
+                    log.debug("Código PIX não contém as pagadoras Okto ou Global.")
                     
         except Exception as e:
             error_report(cpf=self.row["CPF"],account_name=self.row["Nome"], error=e)

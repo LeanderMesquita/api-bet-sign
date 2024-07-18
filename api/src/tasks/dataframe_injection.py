@@ -71,6 +71,7 @@ class DataframeInjection(BaseTask):
             self.page.locator("label").filter(has_text="Tenho 18 anos ou mais de").click()
             sleep(1)
             self.page.get_by_label("Tenho 18 anos ou mais de").press("Enter")
+            sleep(5)
 
             #log.success(f'Account ({nome}) was registered successfully!')
             #successfully_report(cpf, nome, email, senha)
