@@ -117,7 +117,7 @@ class VerifyAccount(BaseTask):
                 page.on("dialog", lambda dialog: dialog.accept())
 
                 log.info("Reading PIX code from clipboard")
-                codigo_pix = page.evaluate('navigator.clipboard.readText()')
+                codigo_pix = page.evaluate('''() => navigator.clipboard.readText()''')
                 log.debug(f'Value pix code: {codigo_pix}') 
 
                 provider = self.get_payment_provider(codigo_pix)
