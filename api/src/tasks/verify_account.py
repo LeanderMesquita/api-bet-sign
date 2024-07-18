@@ -5,6 +5,7 @@ import playwright
 from api.src.tasks.base_task import BaseTask
 from playwright.sync_api import sync_playwright, Playwright, expect
 from api.src.utils.functions.error_report import error_report
+from api.src.utils.functions.successfully_report import successfully_report
 from api.src.utils.logger.index import log
 
 class VerifyAccount(BaseTask):
@@ -32,6 +33,9 @@ class VerifyAccount(BaseTask):
             page = self.page
             email = self.row['E-mail']
             password = self.row['Senha']
+            name = self.row['Nome']
+            cpf = self.row['CPF']
+           
 
             log.info("Starting account validation")
             
@@ -50,9 +54,8 @@ class VerifyAccount(BaseTask):
             log.debug("Filled password and pressed 'Enter'")
             
             log.debug("Checking if the 'Ignore for now' link is visible.")
-            if page.get_by_role("link", name="Ignorar por enquanto (7 dias").is_visible():
-                log.debug("'Ignore for now' link is visible, clicking it.")
-                page.get_by_role("link", name="Ignorar por enquanto (7 dias").click()
+            log.debug("'Ignore for now' link is visible, clicking it.")
+            page.get_by_role("link", name="Ignorar por enquanto (7 dias").click()
 
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
@@ -77,27 +80,27 @@ class VerifyAccount(BaseTask):
             log.debug("Waiting for the email content to load...")    
             page.wait_for_timeout(50000)
 
-            log.info("Clicking the account activation link")
+            log.debug("Clicking the account activation link")
             activation_link = page.locator("a:has-text('Ative sua conta')").get_attribute('href')
             if activation_link:
-                page.goto(activation_link, timeout=1000000)
-                page.wait_for_timeout(50000)
-                log.info("Navigated to the account activation link")
+                page.goto(activation_link, timeout=100000)
+                page.wait_for_timeout(20000)
+                log.debug("Navigated to the account activation link")
             else:
                 raise ValueError("Activation link not found in the email.")
                 
-            log.info("Checking for 'Accept cookies' button")
+            log.debug("Checking for 'Accept cookies' button")
             if page.get_by_role("button", name="Aceitar todos os cookies").is_visible():
-                log.info("Accepting cookies")
+                log.debug("Accepting cookies")
                 page.get_by_role("button", name="Aceitar todos os cookies").click()
-                log.info("Cookies accepted")
+                log.debug("Cookies accepted")
             else:
-                log.info("'Accept cookies' button not found, continuing without accepting cookies")
+                log.debug("'Accept cookies' button not found, continuing without accepting cookies")
 
             expect(page.locator("body")).to_contain_text("Parabéns!")
-            log.info("'Parabéns!' text found")
+            log.debug("'Parabéns!' text found")
 
-            log.info("Clicking 'RESGATE SEU BÔNUS' button")
+            log.debug("Clicking 'RESGATE SEU BÔNUS' button")
             page.get_by_role("button", name="RESGATE SEU BÔNUS").click()
 
             if page.locator("text=Bônus cancelado").is_visible():
@@ -105,32 +108,29 @@ class VerifyAccount(BaseTask):
                 raise ValueError("The current account was created but without bonus")
                 
             else:
-                log.info("Clicking 'Sim, quero'")
+
+                log.debug("Clicking 'Sim, quero'")
                 page.get_by_role("button", name="Sim, quero").click()
-                log.info("Selecting sports bonus")
+                log.debug("Selecting sports bonus")
                 page.get_by_role("button", name="selecione o bônus de esporte").click()
                 log.debug('Making a deposit')
                 page.get_by_role("button", name="depositar", exact=True).click()
                 
-                log.info("Clicking 'COPIAR CÓDIGO' button")
+                log.debug("Clicking 'COPIAR CÓDIGO' button")
                 page.get_by_role("button", name=" COPIAR CÓDIGO").click()  # Copia o código PIX
                 
-                log.info("Handling clipboard permission dialog")
-                page.on("dialog", lambda dialog: dialog.accept())
+                log.debug("Handling clipboard permission dialog")
+                page.once("dialog", lambda dialog: dialog.accept())
 
-                log.info("Reading PIX code from clipboard")
-                codigo_pix = page.evaluate('''() => navigator.clipboard.readText()''')
+                log.debug("Reading PIX code from clipboard")
+                # Resolver a Promise para obter o valor do clipboard
+                codigo_pix = page.evaluate('''navigator.clipboard.readText().then(text => text)''')
                 log.debug(f'Value pix code: {codigo_pix}') 
 
-                provider = self.get_payment_provider(self, link=codigo_pix)
-                if provider:
-                    log.info(f'Account Verified Successfully with payment provider: {provider}')
-                    log.debug(f"Código PIX copiado: {codigo_pix}")
-                    log.debug(f"Pagadora encontrada: {provider}")
-                else:
-                    log.info("Account Verified Successfully, but the payment provider is not Okto or Global.")
-                    log.debug(f"Código PIX copiado: {codigo_pix}")
-                    log.debug("Código PIX não contém as pagadoras Okto ou Global.")
+                log.success(f'Account - [{name}] - Verified Successfully with payment provider: \n{codigo_pix}')
+                
+                successfully_report(cpf=cpf, account_name=name, account_email=email, account_password=password, provider_payment=codigo_pix)
+                
                     
         except Exception as e:
             error_report(cpf=self.row["CPF"],account_name=self.row["Nome"], error=e)

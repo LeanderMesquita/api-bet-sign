@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 import pandas as pd
 from datetime import datetime
 
-def successfully_report(cpf, account_name, account_email, account_password):
+def successfully_report(cpf, account_name, account_email, account_password, provider_payment=None):
 
     directory_name = 'relatorio_cadastrados'
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -12,14 +12,14 @@ def successfully_report(cpf, account_name, account_email, account_password):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    filename = os.path.join(directory, f"cadastrados_{datetime.now().strftime('%d%m%Y')}.xlsx")
+    filename = os.path.join(directory, f"contas_cadastradas_{datetime.now().strftime('%d%m%Y')}.xlsx")
     
     if os.path.exists(filename):
         existing_df = pd.read_excel(filename)
-        new_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password]})
+        new_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password], 'Broker': [provider_payment]})
         updated_df = pd.concat([existing_df, new_df], ignore_index=True)
     else:
-        updated_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password]})
+        updated_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password], 'Broker': [provider_payment]})
     
     updated_df.to_excel(filename, index=False)
 
