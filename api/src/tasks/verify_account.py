@@ -69,8 +69,10 @@ class VerifyAccount(BaseTask):
                 if not self.find_and_click_email():
                     raise ValueError("Activation email not found in Junk folder either.")
                 else:
-                    log.debug("Activation email found in Junk folder, clicking 'Show blocked content'")
-                    page.get_by_role("button", name="Mostrar conteúdo bloqueado e").click()
+                    log.debug("Activation email found in Junk folder, checking if button 'Show blocked content' is visible")
+                    if page.get_by_role("button", name="Mostrar conteúdo bloqueado e").is_visible():
+                        log.debug("Clicking 'Show blocked content'")
+                        page.get_by_role("button", name="Mostrar conteúdo bloqueado e").click()
 
             log.debug("Waiting for the email content to load...")    
             page.wait_for_timeout(50000)
