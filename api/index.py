@@ -44,8 +44,8 @@ class Starter:
 
                 try:
                     page, p = self.configure.construct_browser(self, server=proxy['server'], username=proxy['username'], password=proxy['password'], is_headless=str_to_bool(headless))
+                    
                     injection_task = TaskFactory.create_task(selected_task, row, page)
-
                     if injection_task.execute(): 
                         task_verify_account = TaskFactory.create_task(task_type='verify_account', data=row, page=page)
                         task_verify_account.execute()

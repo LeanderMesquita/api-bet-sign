@@ -17,10 +17,10 @@ class VerifyAccount(BaseTask):
             self.page.locator("div").filter(has_text=re.compile(r"^SUPERBET - Ative sua conta$")).click()
             return True
         except Exception as e:
-            log.debug(f"Exception in find_and_click_email: {e}")
+            log.error(f"Exception in find_and_click_email: {e}")
             return False
         
-    def get_payment_provider(link: str) -> str:
+    def get_payment_provider(self, link: str) -> str:
         payment_providers = ["Okto", "Global", "Pay By SB GLOBAL", "Pay Brokers Cobranca E Se"]
         for provider in payment_providers:
             if re.search(provider, link, re.IGNORECASE):
@@ -50,9 +50,9 @@ class VerifyAccount(BaseTask):
             log.debug("Filled password and pressed 'Enter'")
             
             log.debug("Checking if the 'Ignore for now' link is visible.")
-            if page.locator("a#iShowSkip").is_visible():
+            if page.get_by_role("link", name="Ignorar por enquanto (7 dias").is_visible():
                 log.debug("'Ignore for now' link is visible, clicking it.")
-                page.locator("a#iShowSkip").click()
+                page.get_by_role("link", name="Ignorar por enquanto (7 dias").click()
 
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
@@ -120,7 +120,7 @@ class VerifyAccount(BaseTask):
                 codigo_pix = page.evaluate('''() => navigator.clipboard.readText()''')
                 log.debug(f'Value pix code: {codigo_pix}') 
 
-                provider = self.get_payment_provider(codigo_pix)
+                provider = self.get_payment_provider(self, link=codigo_pix)
                 if provider:
                     log.info(f'Account Verified Successfully with payment provider: {provider}')
                     log.debug(f"Código PIX copiado: {codigo_pix}")
