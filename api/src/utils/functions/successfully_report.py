@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 import pandas as pd
 from datetime import datetime
 
-def successfully_report(cpf, account_name, account_email, account_password, provider_payment=None):
+def successfully_report(cpf, account_name, account_email, account_password, provider_payment='Não foi possível capturar o dado.'):
 
     directory_name = 'relatorio_cadastrados'
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
