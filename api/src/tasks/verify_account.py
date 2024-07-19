@@ -55,9 +55,10 @@ class VerifyAccount(BaseTask):
             log.debug("Filled password and pressed 'Enter'")
             
             log.debug("Checking if the 'Ignore for now' link is visible.")
-            if page.get_by_role("link", name="Ignorar por enquanto (7 dias").is_visible():
+            if page.get_by_role("link", name="Ignorar por enquanto").is_visible():
                 log.debug("'Ignore for now' link is visible, clicking it.")
-                page.get_by_role("link", name="Ignorar por enquanto (7 dias").click()
+            page.get_by_role("link", name="Ignorar por enquanto").click()
+            page.get_by_role("link", name="Ignorar por enquanto").click()
 
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
