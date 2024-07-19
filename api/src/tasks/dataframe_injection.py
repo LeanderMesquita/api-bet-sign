@@ -74,7 +74,7 @@ class DataframeInjection(BaseTask):
             sleep(5)
 
             if self.page.locator('.activate-account__content-notice').is_visible():
-
+                successfully_report(cpf=cpf, account_name=nome_usuario, account_email=email, account_password=senha)
                 log.success(f'Account ({nome}) was registered successfully!')
                 return True
             
