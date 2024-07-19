@@ -1,5 +1,6 @@
 from time import sleep
 from api.src.utils.functions.error_report import error_report
+from api.src.utils.functions.send_notification import send_whatsapp_report
 from api.src.utils.functions.split_date import split_date
 from api.src.utils.functions.successfully_report import successfully_report
 from api.src.utils.functions.validate_and_format_cpf import validate_and_format_cpf
@@ -74,6 +75,8 @@ class DataframeInjection(BaseTask):
             sleep(5)
 
             if self.page.locator('.activate-account__content-notice').is_visible():
+                send_whatsapp_report(cpf=cpf, account_name=nome, account_email=email, account_password=senha )
+                log.success(f'Report send to Whatsapp Group')
                 successfully_report(cpf=cpf, account_name=nome_usuario, account_email=email, account_password=senha)
                 log.success(f'Account ({nome}) was registered successfully!')
                 return True
