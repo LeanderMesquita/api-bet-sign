@@ -5,6 +5,7 @@ import playwright
 from api.src.tasks.base_task import BaseTask
 from playwright.sync_api import sync_playwright, Playwright, expect
 from api.src.utils.functions.error_report import error_report
+from api.src.utils.functions.send_notification import send_whatsapp_report
 from api.src.utils.functions.successfully_report import successfully_report
 from api.src.utils.logger.index import log
 
@@ -54,8 +55,9 @@ class VerifyAccount(BaseTask):
             log.debug("Filled password and pressed 'Enter'")
             
             log.debug("Checking if the 'Ignore for now' link is visible.")
-            log.debug("'Ignore for now' link is visible, clicking it.")
-            page.get_by_role("link", name="Ignorar por enquanto (7 dias").click()
+            if page.get_by_role("link", name="Ignorar por enquanto (7 dias").is_visible():
+                log.debug("'Ignore for now' link is visible, clicking it.")
+                page.get_by_role("link", name="Ignorar por enquanto (7 dias").click()
 
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
@@ -83,7 +85,7 @@ class VerifyAccount(BaseTask):
             log.debug("Clicking the account activation link")
             activation_link = page.locator("a:has-text('Ative sua conta')").get_attribute('href')
             if activation_link:
-                page.goto(activation_link, timeout=100000)
+                page.goto(activation_link, timeout=10000000)
                 page.wait_for_timeout(20000)
                 log.debug("Navigated to the account activation link")
             else:
@@ -116,11 +118,19 @@ class VerifyAccount(BaseTask):
                 log.debug('Making a deposit')
                 page.get_by_role("button", name="depositar", exact=True).click()
                 
+
+                def handle_dialog(dialog):
+                    if "área de transferência" in dialog.message or "copiados para a área de transferência" in dialog.message:
+                        log.debug(f'clicking "Permitir" to {dialog.message}')
+                        dialog.accept()  # press "Permitir"
+                    else:
+                        dialog.dismiss()  # press "Bloquear"
+                
+                page.on("dialog", handle_dialog)
+
                 log.debug("Clicking 'COPIAR CÓDIGO' button")
                 page.get_by_role("button", name=" COPIAR CÓDIGO").click()  # Copia o código PIX
-                
-                log.debug("Handling clipboard permission dialog")
-                page.once("dialog", lambda dialog: dialog.accept())
+
 
                 log.debug("Reading PIX code from clipboard")
                 # Resolver a Promise para obter o valor do clipboard
@@ -128,7 +138,8 @@ class VerifyAccount(BaseTask):
                 log.debug(f'Value pix code: {codigo_pix}') 
 
                 log.success(f'Account - [{name}] - Verified Successfully with payment provider: \n{codigo_pix}')
-                
+                send_whatsapp_report(cpf=cpf, account_name=name, account_email=email, account_password=password, broker=codigo_pix )
+                log.success(f'Report send to Whatsapp Group')
                 successfully_report(cpf=cpf, account_name=name, account_email=email, account_password=password, provider_payment=codigo_pix)
                 
                     
