@@ -1,10 +1,13 @@
 import os
+import sys
 import requests
 import json
 from dotenv import load_dotenv
 
 # Carregar variáveis de ambiente do arquivo .env
-load_dotenv()
+base_dir = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(base_dir, '.env') 
+load_dotenv(env_path)
 
 def send_whatsapp_report(cpf:str, account_email:str, account_password:str, account_name:str, broker:str):
     url_api_wp = os.getenv('URL_API_WP')

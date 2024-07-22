@@ -1,3 +1,4 @@
+import sys
 from playwright.sync_api import sync_playwright
 from api.src.utils.logger.index import log
 from dotenv import load_dotenv
@@ -24,7 +25,10 @@ class Configure:
             context = browser.new_context(proxy=proxy_options)
             page = context.new_page()
             
-            load_dotenv()
+            base_dir = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
+            env_path = os.path.join(base_dir, '.env') 
+            load_dotenv(env_path)
+
             base_url = os.getenv('BASE_URL')
             log.debug(f"Filling URL: {base_url}")
             page.goto(base_url, timeout=9000000)
@@ -35,7 +39,11 @@ class Configure:
             log.error(f'Error in browser construction: {e}')
 
     def get_credentials(self):
-        load_dotenv()
+        
+        base_dir = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(os.path.abspath(__file__))
+        env_path = os.path.join(base_dir, '.env') 
+        load_dotenv(env_path)
+        
         username = os.getenv('BASE_USERNAME')
         password = os.getenv('BASE_PASSWORD')
         return username, password
