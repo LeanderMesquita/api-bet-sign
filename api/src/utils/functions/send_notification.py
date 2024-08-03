@@ -9,7 +9,7 @@ base_dir = sys._MEIPASS if getattr(sys, 'frozen', False) else os.path.dirname(os
 env_path = os.path.join(base_dir, '.env') 
 load_dotenv(env_path)
 
-def send_whatsapp_report(cpf:str, account_email:str, account_password:str, account_name:str, broker:str):
+def send_whatsapp_report(cpf:str, account_email:str, account_password:str, account_name:str, activation_link:str):
     url_api_wp = os.getenv('URL_API_WP')
     instance = os.getenv('INSTANCE')
     id_group_send = os.getenv('ID_GROUP_SEND')
@@ -31,7 +31,7 @@ def send_whatsapp_report(cpf:str, account_email:str, account_password:str, accou
 🙋🏻‍♂️ *CPF:* {cpf}
 📧 *Email:* {account_email}
 🔑 *Senha:* {account_password}
-🔗 *Broker:* {broker}
+🔗 *Link de Ativação:* {activation_link}
 '''
     url = f"{url_api_wp}{instance}"
     headers = {

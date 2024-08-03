@@ -1,22 +1,23 @@
 from time import sleep
+from api.src.utils.functions.adjust_username import adjust_username
 from api.src.utils.functions.error_report import error_report
-from api.src.utils.functions.send_notification import send_whatsapp_report
+from api.src.utils.functions.format_password import formatar_senha
 from api.src.utils.functions.split_date import split_date
-from api.src.utils.functions.successfully_report import successfully_report
 from api.src.utils.functions.validate_and_format_cpf import validate_and_format_cpf
 from api.src.utils.logger.index import log
 from api.src.tasks.base_task import BaseTask
 from api.src.utils.functions.click_and_fill import click_and_fill
 import re
+import random
 import pandas as pd
-
+import string
 
 class DataframeInjection(BaseTask):
     def __init__(self, row, page):
         self.row = row
         self.page = page
 
-    def execute(self) -> bool:
+    def execute(self) -> None:
         
         try:
             nome = self.row['Nome']
@@ -27,8 +28,9 @@ class DataframeInjection(BaseTask):
             cep = self.row['CEP']
             telefone = self.row['Telefone']
             email = self.row['E-mail']
-            nome_usuario = self.row['E-mail'].split('@')[0]
-            senha = self.row['Senha']
+            nome_usuario = adjust_username(email)
+            password_not_formatted = self.row['Senha']
+            senha = formatar_senha(password_not_formatted)
 
             log.info(f'Registering account ({nome}).')
 
@@ -75,16 +77,10 @@ class DataframeInjection(BaseTask):
             sleep(5)
 
             if self.page.locator('.activate-account__content-notice').is_visible():
-                send_whatsapp_report(cpf=cpf, account_name=nome, account_email=email, account_password=senha )
-                log.success(f'Report send to Whatsapp Group')
-                successfully_report(cpf=cpf, account_name=nome_usuario, account_email=email, account_password=senha)
                 log.success(f'Account ({nome}) was registered successfully!')
                 return True
             
             raise ValueError("Not created account")
-        
         except Exception as e:
             log.error(f'The current account {nome} was not registered. {e}')
             error_report(cpf, nome, error=e)
-            return False
-            

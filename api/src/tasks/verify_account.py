@@ -55,10 +55,7 @@ class VerifyAccount(BaseTask):
             log.debug("Filled password and pressed 'Enter'")
             
             log.debug("Checking if the 'Ignore for now' link is visible.")
-            if page.get_by_role("link", name="Ignorar por enquanto").is_visible():
-                log.debug("'Ignore for now' link is visible, clicking it.")
-            page.get_by_role("link", name="Ignorar por enquanto").click()
-            page.get_by_role("link", name="Ignorar por enquanto").click()
+            page.get_by_role("link", name="Ignorar por enquanto").click()    
 
             page.get_by_test_id("checkboxField").check()
             page.get_by_label("Continuar conectado?").click()
@@ -70,7 +67,7 @@ class VerifyAccount(BaseTask):
             log.info("Searching for activation email in Inbox")
             if not self.find_and_click_email():
                 log.info("Activation email not found in Inbox, checking Junk folder")
-                page.get_by_text("Lixo Eletrônico").click()
+                page.get_by_text("Junk Email").click()
                 page.wait_for_timeout(20000)
                 if not self.find_and_click_email():
                     raise ValueError("Activation email not found in Junk folder either.")
@@ -85,64 +82,13 @@ class VerifyAccount(BaseTask):
 
             log.debug("Clicking the account activation link")
             activation_link = page.locator("a:has-text('Ative sua conta')").get_attribute('href')
-            if activation_link:
-                page.goto(activation_link, timeout=10000000)
-                page.wait_for_timeout(20000)
-                log.debug("Navigated to the account activation link")
-            else:
-                raise ValueError("Activation link not found in the email.")
-                
-            log.debug("Checking for 'Accept cookies' button")
-            if page.get_by_role("button", name="Aceitar todos os cookies").is_visible():
-                log.debug("Accepting cookies")
-                page.get_by_role("button", name="Aceitar todos os cookies").click()
-                log.debug("Cookies accepted")
-            else:
-                log.debug("'Accept cookies' button not found, continuing without accepting cookies")
+            
 
-            expect(page.locator("body")).to_contain_text("Parabéns!")
-            log.debug("'Parabéns!' text found")
-
-            log.debug("Clicking 'RESGATE SEU BÔNUS' button")
-            page.get_by_role("button", name="RESGATE SEU BÔNUS").click()
-
-            if page.locator("text=Bônus cancelado").is_visible():
-                log.error("Account with canceled bonus.") 
-                raise ValueError("The current account was created but without bonus")
-                
-            else:
-
-                log.debug("Clicking 'Sim, quero'")
-                page.get_by_role("button", name="Sim, quero").click()
-                log.debug("Selecting sports bonus")
-                page.get_by_role("button", name="selecione o bônus de esporte").click()
-                log.debug('Making a deposit')
-                page.get_by_role("button", name="depositar", exact=True).click()
-                
-
-                def handle_dialog(dialog):
-                    if "área de transferência" in dialog.message or "copiados para a área de transferência" in dialog.message:
-                        log.debug(f'clicking "Permitir" to {dialog.message}')
-                        dialog.accept()  # press "Permitir"
-                    else:
-                        dialog.dismiss()  # press "Bloquear"
-                
-                page.on("dialog", handle_dialog)
-
-                log.debug("Clicking 'COPIAR CÓDIGO' button")
-                page.get_by_role("button", name=" COPIAR CÓDIGO").click()  # Copia o código PIX
-
-
-                log.debug("Reading PIX code from clipboard")
-                # Resolver a Promise para obter o valor do clipboard
-                codigo_pix = page.evaluate('''navigator.clipboard.readText().then(text => text)''')
-                log.debug(f'Value pix code: {codigo_pix}') 
-
-                log.success(f'Account - [{name}] - Verified Successfully with payment provider: \n{codigo_pix}')
-                send_whatsapp_report(cpf=cpf, account_name=name, account_email=email, account_password=password, broker=codigo_pix )
-                log.success(f'Report send to Whatsapp Group')
-                successfully_report(cpf=cpf, account_name=name, account_email=email, account_password=password, provider_payment=codigo_pix)
-                
+            log.success(f'Account - [{name}] Register Sucessfully')
+            send_whatsapp_report(cpf=cpf, account_name=name, account_email=email, account_password=password, activation_link=activation_link )
+            log.success(f'Report send to Whatsapp Group')
+            successfully_report(cpf=cpf, account_name=name, account_email=email, account_password=password, activation_link=activation_link)
+            
                     
         except Exception as e:
             error_report(cpf=self.row["CPF"],account_name=self.row["Nome"], error=e)

@@ -29,32 +29,40 @@ class Starter:
             log.info(f'Browser closed for {data["name"]}')
         
     
-    def start_dataframe_injection(self, data, headless, selected_task:str = 'dataframe_injection'):
-        try:
-            log.info('Starting automation')
+    def start_dataframe_injection(self, data, headless, selected_task: str = 'dataframe_injection'):
+            try:
+                log.info('Starting automation')
 
-            for index, row in data.iterrows():
-                def str_to_bool(s):
-                    return s.lower() == 'true'
+                for index, row in data.iterrows():
+                    def str_to_bool(s):
+                        return s.lower() == 'true'
 
-                proxy_ip = row['Proxy']  
-                proxy_url = f'http://{proxy_ip}'
-                username, password = self.configure.get_credentials()
-                proxy = {'server': proxy_url, 'username': username, 'password': password}
+                    use_proxy = row['Usa Proxy?']
+                    proxy_ip = row.get('IP Proxy', '')
+                    proxy_username = row.get('Usuário Proxy', '')
+                    proxy_password = row.get('Senha Proxy', '')
+                    log.debug(f'Informação do proxy:', {'Use Proxy?:':use_proxy, 'IP Proxy': proxy_ip, 'Usuário Proxy': proxy_username, 'ProxyPassword': proxy_password})
+                    proxy_url = f'http://{proxy_ip}' if proxy_ip else None
 
-                try:
-                    page, p = self.configure.construct_browser(self, server=proxy['server'], username=proxy['username'], password=proxy['password'], is_headless=str_to_bool(headless))
-                    
-                    injection_task = TaskFactory.create_task(selected_task, row, page)
-                    if injection_task.execute(): 
+                    try:
+                        page, p = self.configure.construct_browser(
+                            self,
+                            use_proxy=use_proxy,
+                            proxy_server=proxy_url,
+                            proxy_username=proxy_username,
+                            proxy_password=proxy_password,
+                            is_headless=str_to_bool(headless)
+                        )
+                        
+                        # injection_task = TaskFactory.create_task(selected_task, row, page)
+                        # if injection_task.execute(): 
                         task_verify_account = TaskFactory.create_task(task_type='verify_account', data=row, page=page)
                         task_verify_account.execute()
 
-                    sleep(5)
-                finally:
-                    p.stop()
-                    log.info(f'Browser closed for {row["Nome"]}')
-                    
-
-        except Exception as e:
-            log.critical(f'A critical error occurred!: {e}')
+                        sleep(5)
+                    finally:
+                        p.stop()
+                        log.info(f'Browser closed for {row["Nome"]}')
+                        
+            except Exception as e:
+                log.critical(f'A critical error occurred!: {e}')

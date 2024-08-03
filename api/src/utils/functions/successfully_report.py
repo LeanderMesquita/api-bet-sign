@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 import pandas as pd
 from datetime import datetime
 
-def successfully_report(cpf, account_name, account_email, account_password, provider_payment='Não foi possível capturar o dado.'):
+def successfully_report(cpf, account_name, account_email, account_password, activation_link='Não foi possível capturar o dado.'):
 
     directory_name = 'relatorio_cadastrados'
     desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -16,10 +16,10 @@ def successfully_report(cpf, account_name, account_email, account_password, prov
     
     if os.path.exists(filename):
         existing_df = pd.read_excel(filename)
-        new_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password], 'Broker': [provider_payment]})
+        new_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password], 'Link de Ativação': [activation_link]})
         updated_df = pd.concat([existing_df, new_df], ignore_index=True)
     else:
-        updated_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password], 'Broker': [provider_payment]})
+        updated_df = pd.DataFrame({'CPF': [cpf],'Nome': [account_name], 'E-mail': [account_email], 'Senha': [account_password], 'Link de Ativação': [activation_link]})
     
     updated_df.to_excel(filename, index=False)
 
