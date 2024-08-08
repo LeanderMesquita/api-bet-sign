@@ -13,6 +13,6 @@ def adjust_username(email: str) -> str:
     random_number = ''.join(random.choices(string.digits, k=4))
     
     # Combine the cleaned username with the random number
-    username_formatted = f"{username}{random_number}"
+    username_formatted = f"{username}"
     
     return username_formatted

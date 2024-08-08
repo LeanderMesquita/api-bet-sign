@@ -6,7 +6,8 @@ def run(playwright: Playwright) -> None:
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
-    
+
+               
 
     # ---------------------
     # context.close()
